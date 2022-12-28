@@ -3,11 +3,13 @@ package com.nijjwal.jwtpractice.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -24,6 +26,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 	
 	private final RsaKeyProperties rsaKeys;
@@ -35,12 +38,18 @@ public class SecurityConfig {
 	
 	@Bean
 	public InMemoryUserDetailsManager user() {
-		return new InMemoryUserDetailsManager(
-				User.withUsername("foo")
-				.password("{noop}password")
-				.authorities("read")
-				.build()
-				); 
+		UserDetails user = User.withUsername("user")
+                .password("{noop}password")
+                .authorities("user")
+                .build();
+        
+		UserDetails admin = User.withUsername("admin")
+                .password("{noop}password")
+                .authorities("admin")
+                .build();
+        
+        return new InMemoryUserDetailsManager(user, admin);
+		
 	}
 	
 
